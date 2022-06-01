@@ -53,7 +53,7 @@ def main(file):
                 new_row['Tmsg' + str(i)] = training_msgs[i]
 
             # Removes commas
-            msg = row['Content'].replace(",", "")
+            msg = processString(row['Content'])
             new_row['Umsg'] = msg
 
             output_df = output_df.append(new_row, ignore_index=True)
@@ -66,6 +66,11 @@ def check_sender(author):
         return 1
     else:
         return 0
+
+def processString(txt):
+  specialChars = "!#$%^&*()./\\,`~:;-_+=][}{?'1234567890\"" 
+  for specialChar in specialChars:
+    txt = txt.replace(specialChar, '')
 
 # Ignores empty messages, call messages, and messages that are links/images
 def filter_check(msg):
