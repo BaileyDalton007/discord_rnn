@@ -42,7 +42,7 @@ def main(file):
                 
                 if filter_check(curr_row['Content']):
                     # Removes commas
-                    msg = curr_row['Content'].replace(",", "")
+                    msg = curr_row['Content']
                     training_msgs.append(msg)
 
                 curr_index += 1
@@ -58,7 +58,7 @@ def main(file):
 
             output_df = output_df.append(new_row, ignore_index=True)
 
-    output_df.to_csv('./output_files/output' + file + '.csv', index=False)
+    output_df.to_csv('./output_files/output' + file, index=False)
 
 # Checks if a message was sent by a user in the USERNAMES list
 def check_sender(author):
@@ -68,17 +68,22 @@ def check_sender(author):
         return 0
 
 def processString(txt):
-  specialChars = "!#$%^&*()./\\,`~:;-_+=][}{?'1234567890\"" 
-  for specialChar in specialChars:
-    txt = txt.replace(specialChar, '')
+    specialChars = """!#$%^&@*()./,"`~:;-_+=][}{?'1234567890"""
+    for specialChar in specialChars:
+        txt = txt.replace(specialChar, '')
+    return txt
+
 
 # Ignores empty messages, call messages, and messages that are links/images
+filters = ['http', 'Started a call', 'Pinned a message', 'Joined the server']
 def filter_check(msg):
-    if type(msg) != str or msg == '' or 'http' in msg or 'Started a call' in msg:
+    if type(msg) != str:
         return False
-    else:
-        return True
 
+    for item in filters:
+        if item in msg:
+            return False
+    return True
 
 if __name__ == '__main__':
     input_files = listdir('./input_files')
