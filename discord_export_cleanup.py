@@ -1,5 +1,5 @@
 ### Be sure to create an 'input_files' directory and put all of your downloaded csv's into
-### A 'output_files' directory will be created to store output csv's
+### Also create an 'output_files' directory for the script to store csv's
 
 import csv
 import pandas as pd
