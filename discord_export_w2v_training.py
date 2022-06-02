@@ -8,7 +8,7 @@ import csv
 from os import listdir
 
 def main(file):
-    output_file = open('./embed_output_files/output' + file + '.csv', 'w', newline='', encoding='utf8')
+    output_file = open('./embed_output_files/output' + file, 'w', newline='', encoding='utf8')
     writer = csv.writer(output_file)
 
     with open('./input_files/' + file, 'r', encoding='utf8') as csv_file:
