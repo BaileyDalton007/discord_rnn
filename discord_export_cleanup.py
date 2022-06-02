@@ -59,7 +59,7 @@ def main(file):
 
             output_df = output_df.append(new_row, ignore_index=True)
 
-    output_df.to_csv('./output_files/output' + file, index=False)
+    output_df.to_csv('./output_files/output' + str(curr_file_num) + '.csv', index=False)
 
 # Checks if a message was sent by a user in the USERNAMES list
 def check_sender(author):
