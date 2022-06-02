@@ -1,7 +1,8 @@
+### This script is for RNN training
+
 ### Be sure to create an 'input_files' directory and put all of your downloaded csv's into
 ### Also create an 'output_files' directory for the script to store csv's
 
-import csv
 import pandas as pd
 
 from os import listdir
