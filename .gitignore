@@ -1,3 +1,4 @@
 input_files/*
 output_files/*
 embed_output_files/*
+*.txt

@@ -20,10 +20,11 @@ def main(file):
 
             # Don't print heading
             if line_num != 0:
-                msg = row[3]
+                msg = row[3].lower()
 
                 if (filter_check(msg)):
-                    processed_msg = processString(msg)
+                    processed_msg = process_string(msg)
+                    processed_msg = word_blacklist(msg)
                     if len(processed_msg) > 0:
                         writer.writerow([processed_msg])
             line_num += 1
@@ -41,14 +42,25 @@ def filter_check(msg):
             return False
     return True
 
-def processString(txt):
+def process_string(txt):
     specialChars = """!#$%^&@*()./,"`~:;-_+=][}{?'1234567890"""
     for specialChar in specialChars:
         txt = txt.replace(specialChar, '')
     return txt
 
+def word_blacklist(txt):
+    for word in blacklist:
+        txt = txt.replace(word, '')
+    return txt
+    
 
 if __name__ == '__main__':
+
+    # Load blacklisted words from text file
+    with open('blacklist.txt') as f:
+        blacklist = f.read().lower().splitlines()
+
+
     input_files = listdir('./input_files')
     
     num_files = len(input_files)
