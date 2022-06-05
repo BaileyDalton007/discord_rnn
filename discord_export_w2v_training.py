@@ -7,6 +7,11 @@
 import csv
 
 from os import listdir
+import string
+
+# Having messages shorter than the window in the w2v model does not make sense, so filter out
+# messages that have a length less than MIN_MSG_LENGTH words
+MIN_MSG_LENGTH = 5
 
 def main(file):
     output_file = open('./embed_output_files/embed_output' + str(curr_file_num)+ '.csv', 'w', newline='', encoding='utf8')
@@ -25,15 +30,18 @@ def main(file):
 
                 if (filter_check(msg)):
                     processed_msg = process_string(msg)
-                    processed_msg = word_blacklist(msg)
-                    if len(processed_msg) > 0:
+                    processed_msg = word_blacklist(processed_msg)
+
+                    # Check word count of message
+                    word_count = sum([i.strip(string.punctuation).isalpha() for i in processed_msg.split()])
+                    if word_count >= MIN_MSG_LENGTH:
                         writer.writerow([processed_msg])
             line_num += 1
 
     output_file.close()
 
 # Ignores empty messages, call messages, and messages that are links/images
-filters = ['http', 'Started a call', 'Pinned a message', 'Joined the server']
+filters = ['http', 'started a call', 'pinned a message', 'joined the server']
 def filter_check(msg):
     if type(msg) != str:
         return False
