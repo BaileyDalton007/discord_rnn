@@ -2,6 +2,7 @@
 
 ### Be sure to create an 'input_files' directory and put all of your downloaded csv's into
 ### Also create an 'embed_output_files' directory for the script to store csv's
+### Create a blacklist.txt file to remove words from the data set
 
 import csv
 
@@ -43,9 +44,9 @@ def filter_check(msg):
     return True
 
 def process_string(txt):
-    specialChars = """!#$%^&@*()./,"`~:;-_+=][}{?'1234567890"""
-    for specialChar in specialChars:
-        txt = txt.replace(specialChar, '')
+    special_chars = """!#$%^&@*()./,"`~:;-_+=][}{?'1234567890"""
+    for special_char in special_chars:
+        txt = txt.replace(special_char, '')
     return txt
 
 def word_blacklist(txt):
