@@ -20,6 +20,7 @@ def main(file):
     with open('./input_files/' + file, 'r', encoding='utf8') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_num = 0
+        lines_output = 0
 
         # First go throught the file to find all messages sent by user
         for row in csv_reader:
@@ -36,9 +37,11 @@ def main(file):
                     word_count = sum([i.strip(string.punctuation).isalpha() for i in processed_msg.split()])
                     if word_count >= MIN_MSG_LENGTH:
                         writer.writerow([processed_msg])
+                        lines_output += 1
             line_num += 1
 
     output_file.close()
+    return line_num, lines_output
 
 # Ignores empty messages, call messages, and messages that are links/images
 filters = ['http', 'started a call', 'pinned a message', 'joined the server']
@@ -72,6 +75,10 @@ if __name__ == '__main__':
 
     input_files = listdir('./input_files')
     
+    # Total line number and number of messages ouput
+    total_line_num = 0
+    total_out_lines = 0
+
     num_files = len(input_files)
     curr_file_num = 1
 
@@ -79,7 +86,11 @@ if __name__ == '__main__':
         # Print progress updates
         print('Progress: ' + str(curr_file_num) + '/' + str(num_files))
         
-        main(file)
+        line_num, lines_output = main(file)
+
+        total_line_num += line_num
+        total_out_lines += lines_output
+
         curr_file_num += 1
     
-    print('Done!')
+    print(f'Done with {total_line_num} of lines checked and {total_out_lines} of lines output!')
