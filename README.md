@@ -146,6 +146,10 @@ The other 3 columns, `Tmsg0, Tmsg1, Tmsg2` are input messages 1-3.
 
 ![image](https://user-images.githubusercontent.com/59097689/172444544-2d4e6971-e264-4945-a849-cb1b6d878868.png)
 
+The output of `discord_export_cleanup.py` tells us that we have `6353` rows of training data
+to train our model on, which is quite low. That is another problem that will be fixed in the next
+section.
+
 
 Before messages can be passed to the model, they need to be
 padded to a uniform length, tokenized, and made into word vectors,
