@@ -1,3 +1,4 @@
+
 # Discord Neural Network
 
 This project uses downloaded discord chats to train a neural network to respond to messages.
@@ -52,6 +53,13 @@ Of course most of this data will not be needed for the word
 embedding model, so I wrote `discord_export_w2v_training.py` to extract just the message
 content. See [Usage](#Usage) for instructions on using the scripts in this repositiory.
 
+The output of running the script:
+```
+Done with 369906 of lines checked and 116283 of lines output!
+```
+This means we will have `116,283` messages to train our w2v model on.
+
+
 Now we can feed that training data to a Word2Vec model.
 I decided to create a seperate model for word embedding instead of 
 just adding an embedding layer into the neural network so I could
@@ -92,8 +100,138 @@ similar body parts to `knee` have been listed, such as `stomach`,
 begin to see glimpses of intelligence. Lets save our word embedding
 model and move onto the generation neural network.
 
+
+
+And here is a PCA reduced representation of the word vectors, colored
+by their number of uses, see `w2v_plot.html` for interactive version:
+
+
 Here is a top-level diagram of the process I have described thus far:
 ![image](https://user-images.githubusercontent.com/59097689/171921352-c09c7cd8-01aa-42c8-8d84-0eaa1513a4dd.png)
+
+
+
+#### Dense Neural Network Approach
+Disclaimer, this method went about as well as you could expect,
+horribly horrible in just about every way. I was curious what
+would happen if I tried using a DNN on a task so obviously suited
+for a RNN. The output I got was incoherent and in the next section
+I will be implementing it correctly. I learned so much from this
+though and still find the results quite interesting, but if you
+have no interest in what not to do, go ahead and skip to the
+Recurrent Neural Network section.
+
+##### Preparing Training Data
+
+With this approach, I was trying to make this a classification task,
+despite it very clearly not being one. I decided to take each message
+I sent from the downloaded data, and extract the last three messages
+before for context to pass into the model. The model would (theoretically)
+use the input messages to classify a type of response. Once again, I
+know this will not work well, but I was curious nonetheless.
+
+Here is the output from the data preperation script `discord_export_cleanup.py`
+Notice: script will no longer output this as it has been changed for
+the format of RNN input, so if for some reason you want to replicate
+this, look back in commit history.
+```
+Tmsg0,  Tmsg1,            Tmsg2,             Umsg
+Ahh,    or  notif,        no its only ping,  allo
+Okay,   But ... anymore,  I have ... mins,   Are ... tournements
+```
+
+The last column, `Umsg` is the user sent message, in this case, what I sent.
+The other 3 columns, `Tmsg0, Tmsg1, Tmsg2` are input messages 1-3.
+
+
+![image](https://user-images.githubusercontent.com/59097689/172444544-2d4e6971-e264-4945-a849-cb1b6d878868.png)
+
+
+Before messages can be passed to the model, they need to be
+padded to a uniform length, tokenized, and made into word vectors,
+which is all handled in the Data Preprocessing section of `discord_dnn_model.inpynb`.
+
+##### Training the Model
+
+After preprocessing we know the input and output shape of our model.
+```
+IN: (VECTOR_DIM, WORD_COUNT, DEPTH)
+OUT: (VECTOR_DIM, WORD_COUNT)
+```
+In this case, we have 100 dimensional word vectors, padded our messages
+to 20 words, and passed in 3 messages for training. So our shapes are:
+
+```
+IN: (100, 20, 3)
+OUT: (100, 20)
+```
+
+Now to the architecture of the model. After seeing the output of
+the DNN, I knew there was no saving it, it was a fundementally
+flawed approach, so I did not spend much time experimenting with
+the model architecture. Here is the version defined in `discord_dnn_model.ipynb`:
+```python
+model = tf.keras.models.Sequential()
+model.add(tf.keras.layers.Dense(512, activation='relu', input_shape=(3, WORD_COUNT, VECTOR_DIM)))
+model.add(tf.keras.layers.Dense(1024, activation='relu'))
+model.add(tf.keras.layers.Flatten())
+model.add(tf.keras.layers.Dense(2000, activation='relu'))
+
+model.add(tf.keras.layers.Reshape((WORD_COUNT, VECTOR_DIM)))
+```
+Not much interesting going on here, just 2 dense layers followed by
+a flatten and another dense layer, before being reshaped to the
+format of an output message.
+
+I decided to train the model for 150 epochs, even though accuracy
+flattens out around 15. I did this for no good reason, was just curious
+what effects training that long would have on a model using a relatively small
+dataset.
+
+Here are performance graphs trained on 15 epochs:
+
+![image](https://user-images.githubusercontent.com/59097689/172443611-6b2011dc-e3ed-40e9-89af-f02beec990fe.png)
+
+And here are the same graphs trained on 150 epochs:
+
+![image](https://user-images.githubusercontent.com/59097689/172443411-c2a6cc65-4867-4c2c-92c0-c172614aa54a.png)
+
+For fun here is some of the output I got:
+```
+input_msgs = [['okay so first iteration of neural network is just mid stroke'],
+              ['woah thats really sick'],
+              ['huh it came out']]
+
+> ['but', 'sourmatt', '🤔', 'exam', 'has', 'a', 'like', 'lime', 'vanguard', 'to', 'excited', 'sync', 'grounded',
+ 'consist', 'dias', 'channels', 'busy', 'and', 'because', 'more']
+```
+Here I got my first somewhat relevant response, as the first 3 words
+of the output are a geniune response to the input messages.
+```
+input_msgs = [['Also this is news to me but snoop dogg has the record now for most solo kills in warzone'],
+              ['1 game'],
+              ['how many']]
+> ['obv', 'enemies', 'inactive', 'done', 'argument', 'vocabulary', '“the', 'prescribed', 'because', 'nearby',
+ 'and', 'rough', 'nebula', 'current', 'advantage', 'ingrained', 'that', 'hassle', 'because', 'unrelated']
+```
+
+Intelligence fades just as quickly as it appears, seems as though that
+last one was a fluke.
+```
+input_msgs = [['valorant is my fav game known to man'],
+              ['bro aint no way you like valorant more than minecraft you monkey'],
+              ['i have the game taste of an infant child']]
+> ['i', 'yea', 'recoil', 'tryouts', 'issues', 'reacting', 'that', 'recording', 'past', 'yea', 'since', 'that',
+ 'experience', 'some', 'rough', 'shown', 'obv', 'a', 'because', 'since']
+              
+```
+The outputs are just as I expected, comically bad. As I stated before,
+I tried to treat this as a classification problem when it clearly wasn't
+and the effects of that can be seen in the horrendous accuracy and loss
+graphs shown above.
+
+#### Recurrent Neural Network Approach
+placeholder
 
 ## Usage
 
