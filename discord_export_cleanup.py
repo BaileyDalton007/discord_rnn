@@ -18,6 +18,9 @@ def main(file):
     data = pd.read_csv('./input_files/' + file, delimiter=',')
     data.reset_index()
 
+    line_num = 0
+    lines_output = 0
+
     # Make enough training columns to hold depth number of messages
     cols = []
     for i in range(DEPTH):
@@ -30,6 +33,7 @@ def main(file):
     data = data.drop(columns=['AuthorID', 'Date', 'Attachments', 'Reactions'])
 
     for index, row in data.iterrows():
+        line_num += 1
         is_user = check_sender(row['Author'])
 
         if is_user and filter_check(row['Content']):
@@ -43,7 +47,9 @@ def main(file):
                 
                 if filter_check(curr_row['Content']):
                     # Removes commas
-                    msg = curr_row['Content']
+                    msg = processString(curr_row['Content'])
+                    msg = word_blacklist(msg)
+
                     training_msgs.append(msg)
 
                 curr_index += 1
@@ -55,11 +61,14 @@ def main(file):
 
             # Removes commas
             msg = processString(row['Content'])
+            msg = word_blacklist(msg)
             new_row['Umsg'] = msg
 
             output_df = output_df.append(new_row, ignore_index=True)
+            lines_output += 1
 
     output_df.to_csv('./output_files/output' + str(curr_file_num) + '.csv', index=False)
+    return line_num, lines_output
 
 # Checks if a message was sent by a user in the USERNAMES list
 def check_sender(author):
@@ -74,6 +83,10 @@ def processString(txt):
         txt = txt.replace(specialChar, '')
     return txt
 
+def word_blacklist(txt):
+    for word in blacklist:
+        txt = txt.replace(word, '')
+    return txt
 
 # Ignores empty messages, call messages, and messages that are links/images
 filters = ['http', 'Started a call', 'Pinned a message', 'Joined the server']
@@ -87,8 +100,18 @@ def filter_check(msg):
     return True
 
 if __name__ == '__main__':
+
+    # Load blacklisted words from text file
+    with open('blacklist.txt') as f:
+        blacklist = f.read().lower().splitlines()
+
+
     input_files = listdir('./input_files')
     
+    # Total line number and number of messages ouput
+    total_line_num = 0
+    total_out_lines = 0
+
     num_files = len(input_files)
     curr_file_num = 1
 
@@ -96,7 +119,11 @@ if __name__ == '__main__':
         # Print progress updates
         print('Progress: ' + str(curr_file_num) + '/' + str(num_files))
         
-        main(file)
+        line_num, lines_output = main(file)
+
+        total_line_num += line_num
+        total_out_lines += lines_output
+
         curr_file_num += 1
     
-    print('Done!')
+    print(f'Done with {total_line_num} of lines checked and {total_out_lines} of lines output!')
