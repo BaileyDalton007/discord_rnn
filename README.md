@@ -202,17 +202,19 @@ input_msgs = [['okay so first iteration of neural network is just mid stroke'],
               ['woah thats really sick'],
               ['huh it came out']]
 
-> ['but', 'sourmatt', '🤔', 'exam', 'has', 'a', 'like', 'lime', 'vanguard', 'to', 'excited', 'sync', 'grounded',
- 'consist', 'dias', 'channels', 'busy', 'and', 'because', 'more']
+> ['but', 'sourmatt', '🤔', 'exam', 'has', 'a', 'like', 'lime', 'vanguard', 'to', 'excited',
+    'sync', 'grounded', 'consist', 'dias', 'channels', 'busy', 'and', 'because', 'more']
 ```
 Here I got my first somewhat relevant response, as the first 3 words
 of the output are a geniune response to the input messages.
 ```
-input_msgs = [['Also this is news to me but snoop dogg has the record now for most solo kills in warzone'],
+input_msgs = [['Also this is news to me but snoop dogg has the record now for most solo
+                kills in warzone'],
               ['1 game'],
               ['how many']]
-> ['obv', 'enemies', 'inactive', 'done', 'argument', 'vocabulary', '“the', 'prescribed', 'because', 'nearby',
- 'and', 'rough', 'nebula', 'current', 'advantage', 'ingrained', 'that', 'hassle', 'because', 'unrelated']
+> ['obv', 'enemies', 'inactive', 'done', 'argument', 'vocabulary', '“the', 'prescribed',
+    'because', 'nearby', 'and', 'rough', 'nebula', 'current', 'advantage', 'ingrained',
+     'that', 'hassle', 'because', 'unrelated']
 ```
 
 Intelligence fades just as quickly as it appears, seems as though that
@@ -221,8 +223,9 @@ last one was a fluke.
 input_msgs = [['valorant is my fav game known to man'],
               ['bro aint no way you like valorant more than minecraft you monkey'],
               ['i have the game taste of an infant child']]
-> ['i', 'yea', 'recoil', 'tryouts', 'issues', 'reacting', 'that', 'recording', 'past', 'yea', 'since', 'that',
- 'experience', 'some', 'rough', 'shown', 'obv', 'a', 'because', 'since']
+> ['i', 'yea', 'recoil', 'tryouts', 'issues', 'reacting', 'that', 'recording', 'past',
+    'yea', 'since', 'that', 'experience', 'some', 'rough', 'shown', 'obv', 'a',
+    'because', 'since']
               
 ```
 The outputs are just as I expected, comically bad. As I stated before,
