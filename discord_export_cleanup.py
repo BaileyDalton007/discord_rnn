@@ -80,7 +80,7 @@ def check_sender(author):
 def processString(txt):
     specialChars = """!#$%^&@*()./,"`~:;-_+=][}{?'1234567890"""
     for specialChar in specialChars:
-        txt = txt.replace(specialChar, '')
+        txt = txt.replace(specialChar, '').lower()
     return txt
 
 def word_blacklist(txt):
