@@ -11,8 +11,6 @@ from os import listdir
 # DM me if your heart desires!
 USERNAMES = ['baileyD#8099', 'Plat#3996']
 
-# The amount of prior messages that should be saved before a user sent message
-DEPTH = 3
 
 def main(file):
     data = pd.read_csv('./input_files/' + file, delimiter=',')
@@ -21,48 +19,23 @@ def main(file):
     line_num = 0
     lines_output = 0
 
-    # Make enough training columns to hold depth number of messages
-    cols = []
-    for i in range(DEPTH):
-        cols.append('Tmsg' + str(i))
-    cols.append('Umsg')
-
-    output_df = pd.DataFrame(columns=cols)
+    output_df = pd.DataFrame(columns=['Message'])
 
     # Only keeping author and content columns
     data = data.drop(columns=['AuthorID', 'Date', 'Attachments', 'Reactions'])
 
-    for index, row in data.iterrows():
+    for _, row in data.iterrows():
         line_num += 1
         is_user = check_sender(row['Author'])
 
         if is_user and filter_check(row['Content']):
-            # Get the depth amount of training messages for each user message
-            training_msgs = []
-
-            # How far back the loop is looking for valid training messages
-            curr_index = 1
-            while len(training_msgs) < DEPTH:
-                curr_row = data.iloc[index - curr_index]
-                
-                if filter_check(curr_row['Content']):
-                    # Removes commas
-                    msg = processString(curr_row['Content'])
-                    msg = word_blacklist(msg)
-
-                    training_msgs.append(msg)
-
-                curr_index += 1
-
-            # Generate new row to be added to output dataframe
             new_row = {}
-            for i in range(DEPTH):
-                new_row['Tmsg' + str(i)] = training_msgs[i]
-
-            # Removes commas
-            msg = processString(row['Content'])
+            msg = str(row['Content'])
+            msg = processString(msg)
             msg = word_blacklist(msg)
-            new_row['Umsg'] = msg
+
+            # Adds terminating symbol to end of each message
+            new_row['Message'] = msg + " <end>"
 
             output_df = output_df.append(new_row, ignore_index=True)
             lines_output += 1

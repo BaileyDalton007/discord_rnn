@@ -1,50 +1,65 @@
-### This script is for word vectorization training
+### This script is for RNN training
 
 ### Be sure to create an 'input_files' directory and put all of your downloaded csv's into
-### Also create an 'embed_output_files' directory for the script to store csv's
-### Create a blacklist.txt file to remove words from the data set
+### Also create an 'output_files' directory for the script to store csv's
 
-import csv
+import pandas as pd
 
 from os import listdir
-import string
 
-# Having messages shorter than the window in the w2v model does not make sense, so filter out
-# messages that have a length less than MIN_MSG_LENGTH words
-MIN_MSG_LENGTH = 5
+# I lost one account, so using both
+# DM me if your heart desires!
+USERNAMES = ['baileyD#8099', 'Plat#3996']
+
 
 def main(file):
-    output_file = open('./embed_output_files/embed_output' + str(curr_file_num)+ '.csv', 'w', newline='', encoding='utf8')
-    writer = csv.writer(output_file)
+    data = pd.read_csv('./input_files/' + file, delimiter=',')
+    data.reset_index()
 
-    with open('./input_files/' + file, 'r', encoding='utf8') as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=',')
-        line_num = 0
-        lines_output = 0
+    line_num = 0
+    lines_output = 0
 
-        # First go throught the file to find all messages sent by user
-        for row in csv_reader:
+    output_df = pd.DataFrame(columns=['Message'])
 
-            # Don't print heading
-            if line_num != 0:
-                msg = row[3].lower()
+    # Only keeping author and content columns
+    data = data.drop(columns=['AuthorID', 'Date', 'Attachments', 'Reactions'])
 
-                if (filter_check(msg)):
-                    processed_msg = process_string(msg)
-                    processed_msg = word_blacklist(processed_msg)
+    for _, row in data.iterrows():
+        line_num += 1
+        new_row = {}
+        msg = str(row['Content'])
+        msg = processString(msg)
+        msg = word_blacklist(msg)
 
-                    # Check word count of message
-                    word_count = sum([i.strip(string.punctuation).isalpha() for i in processed_msg.split()])
-                    if word_count >= MIN_MSG_LENGTH:
-                        writer.writerow([processed_msg])
-                        lines_output += 1
-            line_num += 1
+        # Adds terminating symbol to end of each message
+        new_row['Message'] = msg + " <end>"
 
-    output_file.close()
+        output_df = output_df.append(new_row, ignore_index=True)
+        lines_output += 1
+
+    output_df.to_csv('./embed_output_files/output' + str(curr_file_num) + '.csv', index=False)
     return line_num, lines_output
 
+# Checks if a message was sent by a user in the USERNAMES list
+def check_sender(author):
+    if author in USERNAMES:
+        return 1
+    else:
+        return 0
+
+def processString(txt):
+    specialChars = """!#$%^&@*()./,"`~:;-_+=][}{?'1234567890"""
+    for specialChar in specialChars:
+        txt = txt.replace(specialChar, '').lower()
+    return txt
+
+def word_blacklist(txt):
+    for word in blacklist:
+        txt = txt.replace(word, '')
+    return txt
+
 # Ignores empty messages, call messages, and messages that are links/images
-filters = ['http', 'started a call', 'pinned a message', 'joined the server']
+filters = ['http', 'Started a call', 'Pinned a message', 'Joined the server']
 def filter_check(msg):
     if type(msg) != str:
         return False
@@ -53,18 +68,6 @@ def filter_check(msg):
         if item in msg:
             return False
     return True
-
-def process_string(txt):
-    special_chars = """!#$%^&@*()./,"`~:;-_+=][}{?'1234567890"""
-    for special_char in special_chars:
-        txt = txt.replace(special_char, '')
-    return txt
-
-def word_blacklist(txt):
-    for word in blacklist:
-        txt = txt.replace(word, '')
-    return txt
-    
 
 if __name__ == '__main__':
 
