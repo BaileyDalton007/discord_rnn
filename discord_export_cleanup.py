@@ -25,22 +25,21 @@ def main(file):
     data = data.drop(columns=['AuthorID', 'Date', 'Attachments', 'Reactions'])
 
     for _, row in data.iterrows():
+        msg = str(row['Content'])
         line_num += 1
-        is_user = check_sender(row['Author'])
 
-        if is_user and filter_check(row['Content']):
+        # Makes sure message is at least 3 words long
+        if filter_check(msg) and len(msg.split()) >= 3:
             new_row = {}
-            msg = str(row['Content'])
             msg = processString(msg)
             msg = word_blacklist(msg)
 
-            # Adds terminating symbol to end of each message
-            new_row['Message'] = msg + " <end>"
+            new_row['Message'] = msg
 
             output_df = output_df.append(new_row, ignore_index=True)
             lines_output += 1
 
-    output_df.to_csv('./output_files/output' + str(curr_file_num) + '.csv', index=False)
+    output_df.to_csv('./output_files/output' + str(curr_file_num) + '.csv', index=False, header=False)
     return line_num, lines_output
 
 # Checks if a message was sent by a user in the USERNAMES list
