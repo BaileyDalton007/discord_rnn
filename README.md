@@ -30,6 +30,7 @@ I have used Discord for well over four years, so I thought that my messages over
 
 ## Methodology
 **NOTE: The repo has been significantly modified since this was done, if for some reason you want to emulate the Dense approach, go back in commit history, for information about the current repo and the much more successful run, see the section on the Recurrent Neural Network below**
+
 The first problem to tackle was categorical encoding, more specifically, generating word embeddings.
 
 #### Word Embeds
