@@ -29,8 +29,6 @@ I have used Discord for well over four years, so I thought that my messages over
 - To document my method and findings throughly through this write-up.
 
 ## Methodology
-**NOTE: The repo has been significantly modified since this was done, if for some reason you want to emulate the Dense approach, go back in commit history, for information about the current repo and the much more successful run, see the section on the Recurrent Neural Network below**
-
 The first problem to tackle was categorical encoding, more specifically, generating word embeddings.
 
 #### Word Embeds
@@ -120,11 +118,10 @@ would happen if I tried using a DNN on a task so obviously suited
 for a RNN. The output I got was incoherent and in the next section
 I will be implementing it correctly. I learned so much from this
 though and still find the results quite interesting, but if you
-have no interest in what not to do, go ahead and skip to the
-Recurrent Neural Network section.
+have no interest in what not to do, go ahead and skip to
+[Recurrent Neural Network Approach](#Recurrent Neural Netork Approach)
 
 ##### Preparing Training Data
-
 With this approach, I was trying to make this a classification task,
 despite it very clearly not being one. I decided to take each message
 I sent from the downloaded data, and extract the last three messages
@@ -132,7 +129,7 @@ before for context to pass into the model. The model would (theoretically)
 use the input messages to classify a type of response. Once again, I
 know this will not work well, but I was curious nonetheless.
 
-Here is the output from the data preperation script `discord_export_cleanup.py`
+The output from the data preperation script `discord_export_cleanup.py`
 Notice: script will no longer output this as it has been changed for
 the format of RNN input, so if for some reason you want to replicate
 this, look back in commit history.
@@ -142,22 +139,12 @@ Ahh,    or  notif,        no its only ping,  allo
 Okay,   But ... anymore,  I have ... mins,   Are ... tournements
 ```
 
-The last column, `Umsg` is the user sent message, in this case, what I sent.
+The last column, `Umsg` is the user sent message, in this case what I sent.
 The other 3 columns, `Tmsg0, Tmsg1, Tmsg2` are input messages 1-3.
-
-
-![image](https://user-images.githubusercontent.com/59097689/172444544-2d4e6971-e264-4945-a849-cb1b6d878868.png)
-
-The output of `discord_export_cleanup.py` tells us that we have `6353` rows of training data
-to train our model on, which is quite low. That is another problem that will be fixed in the next
-section.
-
-
+<img here>
 Before messages can be passed to the model, they need to be
 padded to a uniform length, tokenized, and made into word vectors,
 which is all handled in the Data Preprocessing section of `discord_dnn_model.inpynb`.
-
-##### Training the Model
 
 After preprocessing we know the input and output shape of our model.
 ```
@@ -165,7 +152,7 @@ IN: (VECTOR_DIM, WORD_COUNT, DEPTH)
 OUT: (VECTOR_DIM, WORD_COUNT)
 ```
 In this case, we have 100 dimensional word vectors, padded our messages
-to 20 words, and passed in 3 messages for training. So our shapes are:
+to 20 words, and passed in 3 messages for training. Our shapes are.
 
 ```
 IN: (100, 20, 3)
@@ -173,7 +160,7 @@ OUT: (100, 20)
 ```
 
 Now to the architecture of the model. After seeing the output of
-the DNN, I knew there was no saving it, it was a fundementally
+the DNN, I knew there was no saving it, that it was a fundementally
 flawed approach, so I did not spend much time experimenting with
 the model architecture. Here is the version defined in `discord_dnn_model.ipynb`:
 ```python
@@ -196,31 +183,26 @@ dataset.
 
 Here are performance graphs trained on 15 epochs:
 
-![image](https://user-images.githubusercontent.com/59097689/172443611-6b2011dc-e3ed-40e9-89af-f02beec990fe.png)
-
 And here are the same graphs trained on 150 epochs:
 
-![image](https://user-images.githubusercontent.com/59097689/172443411-c2a6cc65-4867-4c2c-92c0-c172614aa54a.png)
 
-For fun here is some of the output I got:
+For fun here are some of the output I got:
 ```
 input_msgs = [['okay so first iteration of neural network is just mid stroke'],
               ['woah thats really sick'],
               ['huh it came out']]
 
-> ['but', 'sourmatt', '🤔', 'exam', 'has', 'a', 'like', 'lime', 'vanguard', 'to', 'excited',
-    'sync', 'grounded', 'consist', 'dias', 'channels', 'busy', 'and', 'because', 'more']
+> ['but', 'sourmatt', '🤔', 'exam', 'has', 'a', 'like', 'lime', 'vanguard', 'to', 'excited', 'sync', 'grounded',
+ 'consist', 'dias', 'channels', 'busy', 'and', 'because', 'more']
 ```
 Here I got my first somewhat relevant response, as the first 3 words
 of the output are a geniune response to the input messages.
 ```
-input_msgs = [['Also this is news to me but snoop dogg has the record now for most solo
-                kills in warzone'],
+input_msgs = [['Also this is news to me but snoop dogg has the record now for most solo kills in warzone'],
               ['1 game'],
               ['how many']]
-> ['obv', 'enemies', 'inactive', 'done', 'argument', 'vocabulary', '“the', 'prescribed',
-    'because', 'nearby', 'and', 'rough', 'nebula', 'current', 'advantage', 'ingrained',
-     'that', 'hassle', 'because', 'unrelated']
+> ['obv', 'enemies', 'inactive', 'done', 'argument', 'vocabulary', '“the', 'prescribed', 'because', 'nearby',
+ 'and', 'rough', 'nebula', 'current', 'advantage', 'ingrained', 'that', 'hassle', 'because', 'unrelated']
 ```
 
 Intelligence fades just as quickly as it appears, seems as though that
@@ -229,9 +211,8 @@ last one was a fluke.
 input_msgs = [['valorant is my fav game known to man'],
               ['bro aint no way you like valorant more than minecraft you monkey'],
               ['i have the game taste of an infant child']]
-> ['i', 'yea', 'recoil', 'tryouts', 'issues', 'reacting', 'that', 'recording', 'past',
-    'yea', 'since', 'that', 'experience', 'some', 'rough', 'shown', 'obv', 'a',
-    'because', 'since']
+> ['i', 'yea', 'recoil', 'tryouts', 'issues', 'reacting', 'that', 'recording', 'past', 'yea', 'since', 'that',
+ 'experience', 'some', 'rough', 'shown', 'obv', 'a', 'because', 'since']
               
 ```
 The outputs are just as I expected, comically bad. As I stated before,
@@ -240,8 +221,126 @@ and the effects of that can be seen in the horrendous accuracy and loss
 graphs shown above.
 
 #### Recurrent Neural Network Approach
-placeholder
+Of course I knew that the Dense Neural Network was going to crash and burn,
+it was never made for this type of task. This is where Recurrent Neural Networks
+come in. Instead of trying to look at a whole series of input at once, it goes
+one input at a time, adding onto its understanding.
 
+I will be using an LSTM (Long-Short Term Memory) model. LSTMs are RNNs
+that store meaningful inputs into a long term memory. This helps with
+understanding longer inputs by alleviating the effects of RNN's "vanishing gradient problem".
+See [References](#References) for an article that goes more in-depth 
+with RNN and LSTM models.
+
+##### Training the model
+The training data was one concatenated text corpus of all the messages
+strung together. I tried using a terminating symbol to hopefully have
+the model end its messages, I will talk about how that went wrong later.
+
+Since I decided to generate on a word basis instead of a character
+one, the text was embedded and one-hot encoded before being passed to the model,
+which outputs a probability distribution of what word comes next.
+See [References](#References) for Tensorflow's example of a simple
+RNN generator on a character basis.
+
+Sadly due to Colab's random runtime disconnections and my lack of forethought
+in implementing a training logger, I cannot show training data. 
+
+I trained this simple model for ~700 epochs with a batch size of 128 until the
+accuracy flattened out around 0.65.
+
+```python
+model = tf.keras.models.Sequential()
+
+# Embedding layer for w2v model
+model.add(tf.keras.layers.Embedding(input_dim=vocab_size, output_dim=embedding_size, weights=[pretrained_weights]))
+
+model.add(tf.keras.layers.LSTM(units=embedding_size))
+model.add(tf.keras.layers.Dense(units=vocab_size))
+model.add(tf.keras.layers.Activation('softmax'))
+
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+```
+
+I also tried a more complex model, but the accuracy flattened out much eariler so I ditched it.
+```python
+model = tf.keras.models.Sequential()
+model.add(tf.keras.layers.Embedding(input_dim=vocab_size, output_dim=embedding_size, weights=[pretrained_weights]))
+model.add(tf.keras.layers.LSTM(units=embedding_size, return_sequences=True))
+model.add(tf.keras.layers.Dropout(0.2))
+model.add(tf.keras.layers.LSTM(units=embedding_size, return_sequences=True))
+model.add(tf.keras.layers.Dropout(0.2))
+model.add(tf.keras.layers.LSTM(units=embedding_size))
+model.add(tf.keras.layers.Dropout(0.2))
+model.add(tf.keras.layers.Dense(units=vocab_size))
+model.add(tf.keras.layers.Activation('softmax'))
+
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+```
+
+##### Generating Text
+Now that probability distribution needs to be translated to word indices
+to be one-hot decoded back to text. This is called sampling. See [References](#References)
+for an article that does more in-depth to explain sampling techniques
+
+```python
+def sample(preds, temperature=1.0):
+  if temperature <= 0:
+    return np.argmax(preds)
+
+  preds = np.asarray(preds).astype('float64')
+  preds = np.log(preds) / temperature
+  exp_preds = np.exp(preds)
+  preds = exp_preds / np.sum(exp_preds)
+  probas = np.random.multinomial(1, preds, 1)
+  return np.argmax(probas)
+```
+`sample` takes the predicted probability distribution and a desired `temperature`
+and returns word indices.
+
+`temperature` is the amount of variation in the output. A value of 0 means the output will be
+completely deterministic, while 1.0 will ensure much more variation. I used a 
+value of 0.7.
+
+##### Observations
+Eariler I mentioned that I tried using a terminating symbol to have the model predict
+the end to its own messages, and that it failed miserably.
+I had the csv parsing script add `<end>` to the end of each message
+in the text corpus. This resulted in incoherent output from the model
+with `<end>` scattered every other word or so.
+
+I also tried another approach in having the model end it's own messages.
+I theorized that in the probability distribution there would be a significant
+drop in maximum confidence, and that is where it would end the message.
+To test this thought I graphed exactly that, but the results don't support my theory.
+
+![confidence_over_word](https://user-images.githubusercontent.com/59097689/174655813-08e03539-2fbc-4e6c-bf0f-eef743b8102d.png)
+![confidence_over_word_2](https://user-images.githubusercontent.com/59097689/174655844-e17127e7-fe06-48ac-86d5-4bda2858e3ae.png)
+
+
+There is not much of a correlation between the coherence of the sentence and 
+the confidence of each word, so this will not work.
+
+Perhaps with more data
+and training time this idea could work itself out, but it does not 
+seem feasible in this domain.
+
+The output messages are far more comprehensible than the DNN approach, and
+I am overall quite happy with the results. Here are a few
+output message examples (from `discord_rnn_model.ipynb`):
+
+```
+generate_next("william is")
+> william is cool lol happend u hard a lot that irl 🐒
+```
+```
+generate_next("where is")
+> where is reinstall it now though choice anymore anymore anymore logo help
+```
+```
+generate_next("how to")
+> how to join chat immediately wanted flowers in there request to raid
+```
 ## Usage
 
 ```python
@@ -253,3 +352,6 @@ placeholder
 
  - [Understaning Word Vectors](https://gist.github.com/aparrish/2f562e3737544cf29aaf1af30362f469)
  - [Discord Chat Exporter Repository](https://github.com/Tyrrrz/DiscordChatExporter)
+ - [Understanding LSTM Networks](http://colah.github.io/posts/2015-08-Understanding-LSTMs/)
+ - [Tensorflow Text Generation (Character Based) Tutorial](https://www.tensorflow.org/text/tutorials/text_generation)
+ - [Sampling Strategies for Recurrent Neural Networks](https://medium.com/machine-learning-at-petiteprogrammer/sampling-strategies-for-recurrent-neural-networks-9aea02a6616f)
