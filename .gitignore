@@ -2,3 +2,9 @@ input_files/*
 output_files/*
 embed_output_files/*
 *.txt
+
+app/build/*
+app/dist/*
+app/projectName/*
+app/temp/*
+app/app_interface.spec
