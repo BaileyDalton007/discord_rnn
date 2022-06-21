@@ -3,6 +3,18 @@
 
 This project uses downloaded discord chats to train a neural network to respond to messages.
 
+## Directory
+[Background](#background)
+
+[App Usage](#app-usage)
+
+[Script Usage](#script-usage)
+
+[Project/Personal Goals](#project-goals)
+
+[Methodology](#methodology)
+
+[References](#references)
 
 
 ## Background
@@ -14,6 +26,13 @@ Discord is a messaging application that utilizes two main forms of communication
 
 I have used Discord for well over four years, so I thought that my messages over that time would make an interesting dataset to train a neural network on.
 
+
+## App Usage
+
+placeholder
+
+## Script Usage
+placeholder
 
 
 
@@ -33,11 +52,11 @@ The first problem to tackle was categorical encoding, more specifically, generat
 
 #### Word Embeds
 I decided to use word vectorization to perserve the meaning and 
-context of words. See [References](#References) for a comprehensive
+context of words. See [References](#references) for a comprehensive
 guide for understanding word vectorization. 
 
 After downloading direct message logs and server channels from 
-Discord using an external program (see [References](#References)),
+Discord using an external program (see [References](#references)),
 they came in the following csv format.
 
 ```csv
@@ -51,7 +70,7 @@ they came in the following csv format.
 
 Of course most of this data will not be needed for the word
 embedding model, so I wrote `discord_export_w2v_training.py` to extract just the message
-content. See [Usage](#Usage) for instructions on using the scripts in this repositiory.
+content. See [Usage](#script-usage) for instructions on using the scripts in this repositiory.
 
 The output of running the script:
 ```
@@ -119,7 +138,7 @@ for a RNN. The output I got was incoherent and in the next section
 I will be implementing it correctly. I learned so much from this
 though and still find the results quite interesting, but if you
 have no interest in what not to do, go ahead and skip to
-[Recurrent Neural Network Approach](#Recurrent Neural Netork Approach)
+[Recurrent Neural Network Approach](#recurrent-neural-network-approach)
 
 ##### Preparing Training Data
 With this approach, I was trying to make this a classification task,
@@ -229,7 +248,7 @@ one input at a time, adding onto its understanding.
 I will be using an LSTM (Long-Short Term Memory) model. LSTMs are RNNs
 that store meaningful inputs into a long term memory. This helps with
 understanding longer inputs by alleviating the effects of RNN's "vanishing gradient problem".
-See [References](#References) for an article that goes more in-depth 
+See [References](#references) for an article that goes more in-depth 
 with RNN and LSTM models.
 
 ##### Training the model
@@ -240,7 +259,7 @@ the model end its messages, I will talk about how that went wrong later.
 Since I decided to generate on a word basis instead of a character
 one, the text was embedded and one-hot encoded before being passed to the model,
 which outputs a probability distribution of what word comes next.
-See [References](#References) for Tensorflow's example of a simple
+See [References](#references) for Tensorflow's example of a simple
 RNN generator on a character basis.
 
 Sadly due to Colab's random runtime disconnections and my lack of forethought
@@ -280,7 +299,7 @@ model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=
 
 ##### Generating Text
 Now that probability distribution needs to be translated to word indices
-to be one-hot decoded back to text. This is called sampling. See [References](#References)
+to be one-hot decoded back to text. This is called sampling. See [References](#references)
 for an article that does more in-depth to explain sampling techniques
 
 ```python
@@ -340,11 +359,6 @@ generate_next("where is")
 ```
 generate_next("how to")
 > how to join chat immediately wanted flowers in there request to raid
-```
-## Usage
-
-```python
-placeholder
 ```
 
 
