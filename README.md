@@ -29,7 +29,46 @@ I have used Discord for well over four years, so I thought that my messages over
 
 ## App Usage
 
-placeholder
+### Downloading
+After downloading the `.zip` file from Releases, extract the file.
+
+![image](https://user-images.githubusercontent.com/59097689/174857215-d2b98473-5e99-4059-a7c0-d8bbb7e5e934.png)
+
+To start the app, click on `app_interface.exe`.
+
+**Note: the `.exe` and the model files must stay in the same directory, if you would like to move the app to a more accessible place, please make
+a shortcut!**
+
+The app may take a moment to start up, but once it does it will display a disclaimer and that the model is loaded.
+
+![image](https://user-images.githubusercontent.com/59097689/174857800-6be7e9e0-b11d-4099-bfd5-ffe5dd285036.png)
+
+Most tensorflow errors, such as the `AutoGraph is not available in this enviorment` warning shown above can be ignored and do not affect
+output or performance (it is an issue with PyInstaller hidden imports).
+
+Now the terminal is accepting input at the `>` character. Type either an text prompt or a command.
+
+![image](https://user-images.githubusercontent.com/59097689/174858791-529fea01-0cc1-47d9-a94f-d51a9288d5c5.png)
+
+### Commands
+
+`.help` - will show the follow message of short description of each command.
+
+![image](https://user-images.githubusercontent.com/59097689/174859341-1ca97ae7-69d8-4d0d-9d7c-61765c1ee4e0.png)
+
+`.verbose` - since the model does not know every english word, and typos can happen, words that the model does not know
+are filtered out and not passed to the neural network. Running `.verbose` will have the terminal spit out the filtered version
+of what is being passed to the model. Running the command toggles verbose mode, so run it again to disable.
+
+![image](https://user-images.githubusercontent.com/59097689/174861324-523444c2-0ef2-4a67-97bf-5b8ce288b255.png)
+
+
+`.temp <num>` - sets the temperature of the model sampling to parameter `<num>`. If temperature is set to `0.0`, the model becomes completely deterministic, while if it is set to a value like `1.0`, there will be considerably more variation in output. Default temperature value is `0.7`. See [References](#references) for a comprehensive article about sampling. 
+
+![image](https://user-images.githubusercontent.com/59097689/174860558-734bf325-3bdd-4200-a4d0-0181d9ffdd6e.png)
+
+
+`.stop` - Stops the model and kills the process.
 
 ## Script Usage
 placeholder
